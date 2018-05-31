@@ -1,0 +1,32 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+
+group = 'ru.redsoft.mvv'
+version = '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
+dependencies {
+	compile 'commons-io:commons-io:1.4'
+	testCompile 'junit:junit:4.12'
+}
+
+task cleanDist {
+	delete fileTree(dir: 'dist')
+}
+
+task copyJarToBin(type: Copy, dependsOn: jar) {
+	copy {
+		from jar
+		into "dist"
+	}
+}
+
+clean.dependsOn cleanDist
+build.dependsOn copyJarToBin
