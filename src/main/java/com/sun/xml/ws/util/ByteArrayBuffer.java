@@ -111,11 +111,16 @@ public class ByteArrayBuffer extends OutputStream {
     public final void write(InputStream in) throws IOException {
         while(true) {
             int cap = buf.length-count;     // the remaining buffer space
+            if (cap == 0) {                 // Prevent infinite loop
+                int size = buf.length;
+                buf = null;                 // Help GC clear effects
+                throw new IllegalStateException("Buffer overflow, read: " + count + " bytes, buffer size: " + size);
+            }
+
             int sz = in.read(buf,count,cap);
             if(sz<0)    return;     // hit EOS
             count += sz;
 
-            
             if(cap==sz)
                 ensureCapacity(buf.length*2);   // buffer filled up.
         }
